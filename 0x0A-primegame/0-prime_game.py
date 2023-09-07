@@ -1,43 +1,26 @@
 #!/usr/bin/python3
-"""
-A file containing an implementation for the prime game task
-"""
-
-def primes(n):
-    """Return list of prime numbers between 1 and n inclusive
-       Args:
-        n (int): upper boundary of range. lower boundary is always 1
-    """
-    prime = []
-    sieve = [True] * (n + 1)
-    for p in range(2, n + 1):
-        if (sieve[p]):
-            prime.append(p)
-            for i in range(p, n + 1, p):
-                sieve[i] = False
-    return prime
+"""Prime Game"""
 
 
 def isWinner(x, nums):
-    """
-    Determines winner of Prime Game
-    Args:
-        x (int): no. of rounds of game
-        nums (int): upper limit of range for each round
-    Return:
-        Name of winner (Maria or Ben) or None if winner cannot be found
-    """
-    if x is None or nums is None or x == 0 or nums == []:
+    """Determines the winner of a prime game session with `x` rounds."""
+    if x < 1 or not nums:
         return None
-    Maria = Ben = 0
-    for i in range(x):
-        prime = primes(nums[i])
-        if len(prime) % 2 == 0:
-            Ben += 1
-        else:
-            Maria += 1
-    if Maria > Ben:
-        return 'Maria'
-    elif Ben > Maria:
-        return 'Ben'
-    return None
+    maria, ben = 0, 0
+    # generating prime number max nums
+    num = max(nums)
+    prime = [True for _ in range(1, num + 1, 1)]
+    prime[0] = False
+    for i, isPrime in enumerate(prime, 1):
+        if i == 1 or not isPrime:
+            continue
+        for j in range(i + i, num + 1, i):
+            prime[j - 1] = False
+    # number of prime less than n in nums
+    for _, num in zip(range(x), nums):
+        count = len(list(filter(lambda x: x, prime[0: num])))
+        ben += count % 2 == 0
+        maria += count % 2 == 1
+    if maria == ben:
+        return None
+    return 'Maria' if maria > ben else 'Ben'
